@@ -1,0 +1,22 @@
+version: '3.7'
+
+services:
+ webapp:
+   environment:
+     - FLASK_ENV=development
+     - FLASK_APP=/app/wsgi.py
+     - PYTHONPATH=/app/
+     - OAUTHLIB_INSECURE_TRANSPORT=1
+ nginx:
+   container_name: nginx_your_own_url
+   image: typeai/zombie-nginx
+   restart: always
+   depends_on:
+     - webapp
+   volumes:
+     - ./nginx-dev.yml:/etc/appconf/nginx.yml:ro
+     - ./app/static:/var/www/webapp-static:ro
+   environment:
+     - FLASK_ENV=development
+   ports:
+     - 0.0.0.0:80:80

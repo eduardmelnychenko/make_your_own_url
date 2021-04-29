@@ -1,0 +1,56 @@
+.DS_Store
+# Distribution / packaging
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+**/__pycache__*
+*.pyc
+.idea
+__pycache__
+*/__pycache__
+# Serverless directories
+.serverless
+node_modules
+package.json
+package-lock.json
+.requirements.zip
+.idea/
+.idea/*
+
+
+#scratches
+scratches/
+
+#VS settings
+.vscode
+.vscode/
+*/.vscode
+**/.vscode*
+.vscode/settings.json
+
+pythonenv3.7/
+Python-3.6.5/
+
+# sqlite files
+*.db
+
+# creds
+/app/creds/
+.database.env
+.rabbit.env
+.redis.env
+# 
+

@@ -1,0 +1,40 @@
+
+body {
+  font-family: Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Quick URL */
+#quickUrl {
+  margin: 10px 0px;
+}
+
+#descTextTop {
+  margin-bottom: 15px;
+}
+
+/* body {
+    padding-top: 5rem;
+  }
+  .starter-template {
+    padding: 3rem 1.5rem;
+    text-align: center;
+  }
+
+  .bd-placeholder-img {
+    font-size: 1.125rem;
+    text-anchor: middle;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+
+  @media (min-width: 768px) {
+    .bd-placeholder-img-lg {
+      font-size: 3.5rem;
+    }
+  }
+
+  .bg-light {
+    background-color: #d4eefa !important;
+  } */

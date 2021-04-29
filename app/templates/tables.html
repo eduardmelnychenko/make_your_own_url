@@ -1,0 +1,90 @@
+{% macro basic_table(headers=None, data=None, id=None) %}
+{% if id and data|length > 0 %}
+<div class="table-responsive text-nowrap">
+    <table class="table table-sm table-hover table-borderless table-responsive-md table-striped"
+           style="display:table" id="{{ id }}">
+        {% set header_names = headers.keys() %}
+        {% set col_types = headers.values() | list %}
+
+        <thead>
+        <tr>
+            {% for hd in header_names %}
+            <th scope="col">
+                {{- hd -}}
+            </th>
+            {% endfor %}
+        </tr>
+        </thead>
+        <tbody>
+        {% for row in data %}
+        <tr>
+            {% for row_item in row %}
+            {% set cur_col_type = col_types[loop.index0] %}
+            {% if cur_col_type == 'url' %}
+            <td>
+                {% set row_text = row_item %}
+                {% if row_text|length > 25 %}
+                    {% set end_offset_text = row_text|length - 15 %}
+                    {% set row_item_begin = row_item[:15] %}
+                    {% set row_item_end = row_item[end_offset_text:] %}
+                    {% set row_text = row_item_begin + '...' + row_item_end %}
+                {% endif %}
+                <a href="{{ row_item }}" class="card-link ">{{- row_text -}}</a>
+            </td>
+            {% else %}
+            <td> {{- row_item -}}</td>
+            {% endif %}
+            {% endfor %}
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% endmacro %}
+
+{% macro urls_table(headers=None, data=None, id=None) %}
+{% if id and data|length > 0 %}
+<div class="table-responsive text-nowrap">
+    <table class="table table-sm table-hover table-borderless table-responsive-md table-striped"
+           style="display:table" id="{{id}}">
+        {% set header_names = headers.keys() %}
+        {% set col_types = headers.values() | list %}
+
+        <thead>
+        <tr>
+            {% for hd in header_names %}
+            <th scope="col">
+                {{- hd -}}
+            </th>
+            {% endfor %}
+        </tr>
+        </thead>
+        <tbody>
+        {% for row in data %}
+        <tr>
+            {% for row_item in row %}
+            {% set cur_col_type = col_types[loop.index0] %}
+            {% if cur_col_type == 'url' %}
+            <td>
+                {% set row_text = row_item %}
+                {% if row_text|length > 25 %}
+                    {% set end_offset_text = row_text|length - 15 %}
+                    {% set row_item_begin = row_item[:15] %}
+                    {% set row_item_end = row_item[end_offset_text:] %}
+                    {% set row_text = row_item_begin + '...' + row_item_end %}
+                {% endif %}
+                <a href="{{ row_item }}" class="card-link ">{{- row_text -}}</a>
+            </td>
+            {% else %}
+            <td> {{- row_item -}}</td>
+            {% endif %}
+            {% endfor %}
+            <td><a href="{url_for()}" class="card-link">delete</a> </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% endmacro %}

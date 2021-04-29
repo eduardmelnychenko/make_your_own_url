@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{%- from "layout-header.html" import layout_header -%}
+{%- from "footer-layout.html" import footer_layout -%}
+{%- from "ready-index-layout.html" import ready_index_layout -%}
+{%- from "default-index-layout.html" import default_index_layout -%}
+{% set is_authenticated = current_user.is_authenticated%}
+{%- from "tables.html" import urls_table -%}
+{% block content%}
+
+<!-- adding headers -->
+{{ layout_header(is_authenticated=is_authenticated) }}
+
+<!-- setting urls  -->
+
+<div class="container-fluid" id="main">
+
+  <div class="row" id="quickUrl">
+
+<!--    <div class="col-xs-auto col-sm-3 col-md-3 col-lg-3 col-xl-3" >-->
+<!--      &lt;!&ndash; empty column &ndash;&gt;-->
+<!--    </div>-->
+      
+    <div class="col-xs-12 col-lg-9" >
+      {% if all_url_table.data|length > 0%}
+            <div class="card" id="recentUrlTablesDesc">
+            <div class="card-header h3">
+                Your URLs
+            </div>
+            <!--                end card header-->
+            <div class="card-body">
+                {{ urls_table(headers=all_url_table.headers, data=all_url_table.data, id='allUrlTable') }}
+            </div>
+            <!--    end card-body-->
+            </div>
+      {% endif %}
+            <!--            end card-->
+    </div>
+      <!-- end col-->
+
+<!--      <div class="col-xs-auto col-sm-auto col-md-3 col-lg-3 col-xl-3" >-->
+<!--        &lt;!&ndash; empty column &ndash;&gt;-->
+<!--      </div>-->
+  </div>
+  <!-- end row quickUrl -->
+
+</div>
+<!-- end main container -->
+{% endblock%}
+
+<!-- adding footers -->
+{{ footer_layout() }}

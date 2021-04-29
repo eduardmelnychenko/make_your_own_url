@@ -1,0 +1,33 @@
+version: '3.7'
+services:
+ webapp:
+   container_name: your_own_url
+   build: .
+   restart: always
+   depends_on:
+    - database
+    - cache
+ cache:
+   container_name: redis_your_own_url
+   hostname: make_your_own_url_redis
+   image: redis:latest
+   restart: always
+   env_file:
+    - .redis.env #this will configure redis
+   command: redis-server --appendonly yes --requirepass rcmnd-pass --maxmemory-policy allkeys-lru --maxmemory 100M
+   volumes:
+    - redis_data:/data
+ database:
+   image: "postgres"
+   hostname: make_your_own_url_db
+   restart: always
+   env_file:
+    - .database.env #this will configure db
+   volumes:
+    - postgre_data:/var/lib/postgresql/data/
+   ports:
+    - 5432:5432 # you may wish to comment this line if you do not need external access to the db
+
+volumes:
+  redis_data:
+  postgre_data:

@@ -1,0 +1,33 @@
+{% macro ready_index_layout(long_url=None, short_url=None, url_place_holder=None) %}
+
+<div class="alert alert-success alert-dismissible">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    <strong>Success!</strong> You just created a short URL.
+</div>
+
+<div id="shortUrl">
+    <h6>Your long URL</h6>
+    <input type="text" name="longUrlOutput" id="longUrlOutput" value="" class="form-control" placeholder="{{ long_url }}" readonly>
+    <p></p>
+    <h6>Your short URL</h6>
+    
+    <div class="input-group mb-3">
+        <div id="shortUrlOutput" class="form-control">{{ short_url }}</div>
+        <div class="input-group-append">
+          <button onclick="copyToClipboard('#shortUrlOutput')" type="submit" class="btn btn-success" style="width: 100px;">Copy</button>
+        </div>
+        <!-- end input-group-append -->
+    </div>
+    <!-- end input-group mb-3 -->
+
+    <p></p>
+    <div class="btn-group">
+        <a href="{{url_for('page.index')}}" class="btn btn-primary" role="button" style="width: 150px;">+ NEW URL</a>
+    </div>
+    <!-- end div btn-group -->
+</div>
+<!-- end div shortUrl -->
+<p>
+
+</p>
+{% endmacro %}

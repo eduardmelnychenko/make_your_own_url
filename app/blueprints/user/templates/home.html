@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{%- from "layout-header.html" import layout_header -%}
+{%- from "footer-layout.html" import footer_layout -%}
+{%- from "user_url_forms.html" import new_url_form, ready_url_form -%}
+{%- from "ready-index-layout.html" import ready_index_layout -%}
+{%- from "tables.html" import basic_table -%}
+{% set is_authenticated = current_user.is_authenticated%}
+{% block content%}
+
+<!-- adding headers -->
+{{ layout_header(is_authenticated=is_authenticated) }}
+
+<!-- setting urls  -->
+{% if long_url %}
+{% set url_place_holder = long_url %}
+{% else %}
+{% set url_place_holder = "Enter an URL to shorten" %}
+{% endif %}
+
+<div class="container-fluid" id="main">
+
+    <div class="row" id="quickUrl">
+
+        <div class="col-xs-auto col-sm-2 col-md-3 col-lg-3 col-xl-3">
+        </div>
+        <!--end empty col  -->
+        <div class="col-xs-12 col-sm-8 col-md-6 col-lg-6 col-xl-6">
+            <!--start url form            -->
+            {% if new_url %}
+            <div class="card" id="descTextTop">
+            <div class="card-header h3">Add a new short URL</div>
+            <div class="card-body">
+              <p class="card-text">{{ new_url_form(show_warning=show_warning) }}</p>
+            </div>
+            </div>
+            {% else %}
+            {{ ready_index_layout(long_url=long_url, short_url=short_url, url_place_holder=url_place_holder) }}
+            {% endif %}
+            <!--            end url form-->
+            {% if url_table_data.data|length > 0%}
+            <div class="card" id="recentUrlTablesDesc">
+            <div class="card-header h3">
+                Your latest links
+            </div>
+            <!--                end card header-->
+            <div class="card-body">
+                {{ basic_table(headers=url_table_data.headers, data=url_table_data.data, id='recentUrlTable') }}
+            </div>
+            <!--    end card-body-->
+            </div>
+            {% endif %}
+            <!--            end card-->
+            <div><p></p></div>
+            {% if clicks_table_data.data|length > 0%}
+            <div class="card" id="topUrlTablesDesc">
+            <div class="card-header h3">
+                Top 10 links by clicks
+            </div>
+            <!--                end card-header-->
+
+            <div class="card-body">
+              {{ basic_table(headers=clicks_table_data.headers, data=clicks_table_data.data, id='topUrlTable') }}
+            </div>
+            <!--                end card-body-->
+            </div>
+            <!--            end card-->
+            {% endif %}
+        </div>
+        <!-- end col-->
+        <div class="col-xs-auto col-sm-2 col-md-3 col-lg-3 col-xl-3">
+        </div>
+        <!--end empty col  -->
+    </div>
+    <!-- end row quickUrl -->
+
+</div>
+<!-- end main container -->
+{% endblock%}
+
+<!-- adding footers -->
+{{ footer_layout() }}

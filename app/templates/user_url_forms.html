@@ -1,0 +1,49 @@
+{% macro new_url_form(show_warning=False) %}
+<form action="{{ url_for('user.home') }}" method="post">
+
+    <div id="longUrl">
+        <div class="d-flex flex-column">
+            <div id="extendUrl" class="collapse">
+                <div>
+                    <label for="urlDescription">Comment on this URL</label>
+                    <input class="form-control" name="urlDescription" id="urlDescription"
+                           placeholder="up to 50 symbols">
+                </div>
+                <p>
+                </p>
+                <div>
+                    <label for="urlDaysLive">Days to live</label>
+                    <input class="form-control" type="text" name="urlDaysLive" id="urlDaysLive" placeholder="Always">
+                </div>
+                <p>
+                </p>
+                <div>
+                    <label for="customSuffix">Custom link</label>
+                    <input class="form-control" type="text" name="customSuffix" id="customSuffix">
+                </div>
+                <p>
+
+                </p>
+            </div>
+        </div>
+        <input type="text" name="longUrlInput" id="longUrlInput" value="" class="form-control"
+               placeholder="Enter an URL to shorten">
+        <p>
+
+        </p>
+        <button type="submit" class="btn btn-primary" style="width: 100px;">Create</button>
+        <a href="#extendUrl" class="btn btn-light" data-toggle="collapse" style="width: 100px;">Options</a>
+
+    </div>
+</form>
+{% if show_warning %}
+<div class="alert alert-warning alert-dismissible">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    <strong>Error!</strong> Make sure you entered a valid URL
+</div>
+{% endif %}
+{% endmacro %}
+
+{% macro ready_url_form() %}
+
+{% endmacro %}

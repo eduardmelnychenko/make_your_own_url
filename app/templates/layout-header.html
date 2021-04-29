@@ -1,0 +1,56 @@
+{% macro layout_header(is_authenticated=False, status='free') %}
+{%- from "svg_icons.html" import person -%}
+{%- from "svg_icons.html" import toggleOff -%}
+{%- from "svg_icons.html" import toggleOn -%}
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        {% if is_authenticated %}
+        <a class="navbar-brand" href="/home"><img src="static/images/rcmnd-logo-transparent.png" alt="Logo"></a>
+        {% else %}
+        <a class="navbar-brand" href="/"><img src="static/images/rcmnd-logo-transparent.png" alt="Logo"></a>
+        {% endif %}
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="d-none d-lg-block h4 font-italic">Share and manage your links!</div>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav ml-auto">
+            {% if is_authenticated %}
+            <li class="nav-item active">
+                <a class="nav-link" href="{{url_for('user.urls')}}">My URLs</a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" href="{{url_for('user.settings')}}">Settings</a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" href="{{url_for('user.logout')}}">
+                    <span> {{toggleOff()}}
+                      Logout
+                    </span>
+                </a>
+            </li>
+            {% else %}
+            <li class="nav-item active">
+                <a class="nav-link" href="{{url_for('user.login')}}">
+                    <span>{{ toggleOn() }}
+                    Login
+                    </span>
+                </a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" href="{{url_for('page.signup')}}">
+                    <span>{{ person() }}
+                     SignUp
+                    </span>
+                </a>
+            </li>
+            {% endif %}
+          </ul>
+        </div>
+        <!-- end collapse -->
+    </div>
+    <!-- end container -->
+</nav>
+<!-- end navbar -->
+    
+{% endmacro %}

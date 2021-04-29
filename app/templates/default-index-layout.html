@@ -1,0 +1,54 @@
+{% macro default_index_layout(url_place_holder=None, show_warning=False, show_error=False) %}
+
+        {% if show_error %}
+        <div class="alert alert-danger alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <strong>Not found!</strong> This link was removed or expired
+          </div>
+        {% endif %}
+
+        <div class="card" id="descTextTop">
+            <div class="card-header h2">How to generate a short URL?</div>
+            <div class="card-body">
+              <p class="card-text">Just put a long and ugly URL into the form and push <strong>Create</strong> button. Your new and short URL will appear just after.</p>
+            </div>
+        </div>
+        <!-- end top text card -->
+        <div>
+          <p></p>
+          <!-- <p>{{ short_url }}</p>
+          <p>{{ long_url }}</p> -->
+        </div>  
+  
+        <form action="{{ url_for('page.index') }}" method="post">
+          <div class="input-group mb-3" id="longUrl">
+            <input type="text" name="longUrlInput" id="longUrlInput" value="" class="form-control" placeholder="{{ url_place_holder }}" >
+            <div class="input-group-append">
+              <button type="submit" class="btn btn-primary" style="width: 100px;">Create</button>
+            </div>
+            <!-- end input-group-append -->
+          </div>
+          <!-- end input-group mb -->
+          
+        </form>
+        <!-- end form long-url -->
+        
+        {% if show_warning %}
+        <div class="alert alert-warning alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <strong>Error!</strong> Make sure you entered a valid URL
+          </div>
+        {% endif %}
+
+        <div>
+          <p></p>
+        </div>  
+        <div class="card" id="descTextEnd">
+          <div class="card-header h2">Why to use free and fast url shortener?</div>
+          <div class="card-body">
+            <p class="card-text">Some benefits are on the surface: you can share shorter, nicer links. But also you can manage availability of the links, control a link lifecycle, see statistics of clicks, etc.</p>
+          </div>
+        </div>
+        <!-- end end text card -->
+  
+{% endmacro %}
