@@ -1,6 +1,7 @@
 # Make your own url web app
-You can deploy and host your own url shortener and link management system in a few minutes.
-It's an open-source application built with Python/Dash/Flask/Bootstrap4/PostgreSQL/nginx/Docker.
+Deploy and host your own url shortener and link management system in a few minutes.
+It's an open-source SaaS application built with Python/Dash/Flask/Bootstrap4/PostgreSQL/Redis/nginx/Docker/OAuth.
+The docker image comes with preset Postgres/Redis instances, but you can easily switch to external ones for better scalability/performance.
 
 ## Prerequisites:
 1. Registered domain.
@@ -9,7 +10,10 @@ It's an open-source application built with Python/Dash/Flask/Bootstrap4/PostgreS
 4. Logo in SVG (optional).
 
 ## Features
-* TODO
+* Url customization
+* Click analytics IN PROCESS
+* Link management TODO
+* Users administration TODO
 
 ## Installation instructions
 1. Register your app with GCP console and get credentials. 
@@ -23,3 +27,12 @@ It's an open-source application built with Python/Dash/Flask/Bootstrap4/PostgreS
    Configure nginx to route your domain name and set up your https certificate (Letsencrypt is a good free choice).
    * Use preset docker image with nginx/Letsencrypt. You need just set your domain in `nginx-prod.yml` and then run
     ``sudo docker-compose -f docker-compose.yml -f docker-compose.prod.yml up --build``
+5. On the first run you will need to initialize the database with the following commands:
+   * connect to the app container shell: ``sudo docker exec -it your_own_url /bin/bash`` 
+   * run flask cli command in the shell: ``flask init_db``
+   * if you see ``DB is initialized successfully`` then everything is good
+     
+## Security & settings
+* .database.env for DB credentials and settings
+* .redis.env for Redis credentials and settings
+* Redis and Postgres hosts are set in `app/creds/settings.py` in corresponding classes

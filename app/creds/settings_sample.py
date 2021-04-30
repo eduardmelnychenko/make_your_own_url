@@ -13,7 +13,8 @@ class GoogleSecrets:
 
 
 class CacheSecrets:
-    pass
+    REDIS_PORT = 6379
+    REDIS_HOST = "cache"
 
 
 class CelerySecrets:

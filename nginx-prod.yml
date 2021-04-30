@@ -1,0 +1,7 @@
+servers:
+    webapp:
+      server_name: make_your_own_url  # for development purpose this is not much relevant
+      check_host_header: no
+      upstream: uwsgi://webapp:3031 
+      static_files: /var/www/webapp-static
+      tls: no
