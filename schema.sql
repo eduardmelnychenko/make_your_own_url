@@ -44,23 +44,8 @@ CREATE TABLE click_log (
 );
 
 --view to get count of clicks for url level
-CREATE VIEW click_count_view AS
-  SELECT
-    suffix,
-    long_url,
-    user_id,
-    count(*) AS cnt
-  FROM ((SELECT
-           suffix,
-           long_url,
-           user_id
-         FROM urls) AS url_tb INNER JOIN (SELECT suffix_id
-                                          FROM click_log) AS cl_logs
-      ON url_tb.suffix = cl_logs.suffix_id) fin_tb
-  GROUP BY 1, 2, 3;
-
 --view to get count of clicks for url-source level
-CREATE VIEW click_source_count_view AS
+CREATE MATERIALIZED VIEW click_source_count_view AS
   SELECT
     suffix,
     long_url,
@@ -76,20 +61,22 @@ CREATE VIEW click_source_count_view AS
                                             click_source
                                           FROM click_log) AS cl_logs
       ON url_tb.suffix = cl_logs.suffix_id) fin_tb
-  GROUP BY 1, 2, 3, 4;
+  GROUP BY 1, 2, 3, 4
+WITH DATA;
 
 -- view to get daily clicks for a user urls
-CREATE VIEW click_daily_cnt AS
+CREATE MATERIALIZED VIEW click_daily_cnt AS
   SELECT
     click_log.date_added AS date,
     user_id,
     count(*)             AS cnt
   FROM click_log
     JOIN urls ON click_log.suffix_id = urls.suffix
-  GROUP BY 1, 2;
+  GROUP BY 1, 2
+WITH DATA;
 
 -- info on urls
-CREATE OR REPLACE VIEW all_url_info AS
+CREATE MATERIALIZED VIEW all_url_info AS
   SELECT
     suffix,
     short_url,
@@ -104,7 +91,8 @@ CREATE OR REPLACE VIEW all_url_info AS
                  suffix_id,
                  COUNT(*) AS cnt
                FROM click_log
-               GROUP BY 1) AS cnt_tab ON urls.suffix = cnt_tab.suffix_id;
+               GROUP BY 1) AS cnt_tab ON urls.suffix = cnt_tab.suffix_id
+WITH DATA;
 
 INSERT INTO urls (suffix, short_url ,long_url) VALUES ('shaga', 'https://rcmnd.me/1','http://test.com');
 INSERT INTO urls (suffix, short_url ,long_url) VALUES ('shaga2', 'https://rcmnd.me/12','http://test.com');
