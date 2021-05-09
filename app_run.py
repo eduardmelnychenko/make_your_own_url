@@ -12,6 +12,7 @@ from flask_login import (
 
 
 application = Flask(__name__, template_folder="/app/app/templates")
+
 application = helpers.create_app(application)
 
 

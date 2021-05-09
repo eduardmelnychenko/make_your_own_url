@@ -36,33 +36,69 @@ CREATE TABLE urls (
 --stores all clicks data
 CREATE TABLE click_log (
   date_added   DATE          DEFAULT CURRENT_DATE,
-  click_source TEXT NOT NULL DEFAULT 'not defined',
   suffix_id    TEXT NOT NULL,
+  int_ip_address TEXT NOT NULL,
+  platform TEXT NOT NULL,
+  browser TEXT NOT NULL,
+  version TEXT NOT NULL,
+  lang TEXT NOT NULL,
+  ip TEXT NOT NULL,
+  country_code TEXT NOT NULL,
+  country_name TEXT NOT NULL,
+  region_code TEXT NOT NULL,
+  region_name TEXT NOT NULL,
+  city TEXT NOT NULL,
+  zip_code TEXT NOT NULL,
+  time_zone TEXT NOT NULL,
+  latitude TEXT NOT NULL,
+  longitude TEXT NOT NULL,
   FOREIGN KEY (suffix_id) REFERENCES urls (suffix)
   ON UPDATE CASCADE
   ON DELETE CASCADE
 );
 
 --view to get count of clicks for url level
---view to get count of clicks for url-source level
-CREATE MATERIALIZED VIEW click_source_count_view AS
+CREATE MATERIALIZED VIEW click_count_view AS
   SELECT
     suffix,
     long_url,
     user_id,
-    click_source,
     count(*) AS cnt
   FROM ((SELECT
            suffix,
            long_url,
            user_id
-         FROM urls) AS url_tb INNER JOIN (SELECT
-                                            suffix_id,
-                                            click_source
+         FROM urls) AS url_tb INNER JOIN (SELECT suffix_id
                                           FROM click_log) AS cl_logs
       ON url_tb.suffix = cl_logs.suffix_id) fin_tb
-  GROUP BY 1, 2, 3, 4
+  GROUP BY 1, 2, 3
 WITH DATA;
+
+CREATE UNIQUE INDEX user_id_suffix
+  ON click_count_view (user_id, suffix);
+
+--view to get count of clicks for url-source level
+--CREATE MATERIALIZED VIEW click_source_count_view AS
+--  SELECT
+--    suffix,
+--    long_url,
+--    user_id,
+--    click_source,
+--    count(*) AS cnt
+--  FROM ((SELECT
+--           suffix,
+--           long_url,
+--           user_id
+--         FROM urls) AS url_tb INNER JOIN (SELECT
+--                                            suffix_id,
+--                                            click_source
+--                                          FROM click_log) AS cl_logs
+--      ON url_tb.suffix = cl_logs.suffix_id) fin_tb
+--  GROUP BY 1, 2, 3, 4
+--WITH DATA;
+--
+--CREATE UNIQUE INDEX user_id_suffix_source
+--  ON click_source_count_view (user_id, suffix, click_source);
 
 -- view to get daily clicks for a user urls
 CREATE MATERIALIZED VIEW click_daily_cnt AS
@@ -74,6 +110,9 @@ CREATE MATERIALIZED VIEW click_daily_cnt AS
     JOIN urls ON click_log.suffix_id = urls.suffix
   GROUP BY 1, 2
 WITH DATA;
+
+CREATE UNIQUE INDEX user_id_date
+  ON click_daily_cnt (user_id, date);
 
 -- info on urls
 CREATE MATERIALIZED VIEW all_url_info AS
@@ -94,7 +133,9 @@ CREATE MATERIALIZED VIEW all_url_info AS
                GROUP BY 1) AS cnt_tab ON urls.suffix = cnt_tab.suffix_id
 WITH DATA;
 
+CREATE UNIQUE INDEX user_url
+  ON all_url_info (user_id, short_url);
+
 INSERT INTO urls (suffix, short_url ,long_url) VALUES ('shaga', 'https://rcmnd.me/1','http://test.com');
 INSERT INTO urls (suffix, short_url ,long_url) VALUES ('shaga2', 'https://rcmnd.me/12','http://test.com');
-INSERT INTO click_log (suffix_id) VALUES ('shaga');
-INSERT INTO click_log (suffix_id) VALUES ('shaga2');
+

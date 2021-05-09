@@ -1,7 +1,10 @@
+import logging
+
 import psycopg2.extras as pg_extras
 import psycopg2 as pg
 from flask import g, current_app
 from app.db.redis_instance import redis_client
+from app.creds.settings import CacheSettings
 
 
 def get_db():
@@ -22,12 +25,12 @@ class SQLRequest:
         self.db = get_db()
 
     @staticmethod
-    def close_db():
+    def close_db() -> None:
         db = g.pop("db", None)
         if db is not None:
             db.close()
 
-    def init_db(self):
+    def init_db(self) -> bool:
         conn = self.db
         cursor = conn.cursor()
         try:
@@ -45,7 +48,7 @@ class SQLRequest:
                 self.db.close()
         return res
 
-    def execute_query(self, query):
+    def execute_query(self, query: str) -> bool:
         conn = self.db
         cursor = conn.cursor()
         try:
@@ -62,7 +65,30 @@ class SQLRequest:
                 self.db.close()
         return res
 
-    def get_data(self, query):
+    def execute_values(self, query: str, data_values: list):
+        conn = self.db
+        cursor = conn.cursor()
+
+        try:
+            page_size = 1000
+            if len(data_values) > 10000:
+                page_size = 10000
+
+            pg_extras.execute_values(cur=cursor, sql=query, argslist=data_values, page_size=page_size)
+            self.db.commit()
+
+            res = True
+        except Exception as error:
+            print("Exception is: ", error)
+            res = False
+        finally:
+            if cursor:
+                cursor.close()
+            if self.db:
+                self.db.close()
+        return res
+
+    def get_data(self, query: str) -> list:
         res = None
         cursor = self.db.cursor()
         try:
@@ -79,25 +105,17 @@ class SQLRequest:
         return res
 
 
-def save_url(short_suffix, long_uri, user_id=None, date_expire=None):
+def save_url(short_suffix: str, long_uri: str, user_id=None, date_expire=None) -> bool:
     # push to redis
     n_days_to_live = 30 * 86400  # 30 days in seconds
     redis_client.set(name=short_suffix, value=long_uri, ex=n_days_to_live)
 
-    # save to DB
-    if user_id:
-        if date_expire:
-            save_query = f"INSERT INTO urls (suffix, long_url, user_id, date_expire)" \
-                         f" VALUES ('{short_suffix}', '{long_uri}', '{user_id}', {date_expire})"
-        else:
-            save_query = f"INSERT INTO urls (suffix, long_url, user_id)" \
-                         f" VALUES ('{short_suffix}', '{long_uri}', '{user_id}')"
-    else:
-        save_query = f"INSERT INTO urls (suffix, long_url)" \
-                     f" VALUES ('{short_suffix}', '{long_uri}')"
-
-    res = SQLRequest().execute_query(save_query)
-
+    try:
+        redis_client.lpush(CacheSettings.URL_LOGS, str((short_suffix, long_uri, user_id, date_expire)))
+        res = True
+    except Exception as error:
+        logging.info(error)
+        res = False
     return res
 
 
@@ -113,14 +131,14 @@ def check_for_url(short_suffix: str) -> str:
     return long_url
 
 
-def log_click(suffix, click_source):
-    log_q = f"INSERT into click_log (suffix_id) VALUES ('{suffix}')"
-
-    if click_source:
-        loq_q = f"INSERT into click_log (suffix_id, click_source) VALUES ('{suffix}', '{click_source}')"
-
-    res = SQLRequest().execute_query(log_q)
-
+def log_click(suffix: str, click_source: tuple) -> bool:
+    try:
+        log_tuple = (suffix, ) + click_source
+        redis_client.lpush(CacheSettings.CLICK_LOGS, str(log_tuple))
+        res = True
+    except Exception as error:
+        logging.info(error)
+        res = False
     return res
 
 

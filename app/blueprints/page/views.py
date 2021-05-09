@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for
 
 import app.engine.url_model
 from app.db.db_procs import log_click
+from app.etl.tracker import get_user_info
 
 page = Blueprint('page', __name__, template_folder='templates')
 
@@ -75,7 +76,7 @@ def url_redirect(suffix):
         return redirect(url_for('page.not_found'))
 
     if long_url:
-        click_source = None
+        click_source = get_user_info()
         log_click(suffix, click_source)
         return redirect(long_url, code=302)
 

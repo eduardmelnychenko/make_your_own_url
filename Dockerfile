@@ -17,8 +17,8 @@ RUN pip install -r requirements.txt
 COPY ./ /app/
 
 RUN useradd --home-dir=/app --uid=1000 uwsgi_user
-RUN mkdir /data
-RUN chmod -R 777 /data
+#RUN mkdir /data
+#RUN chmod -R 777 /data
 
 USER uwsgi_user
 

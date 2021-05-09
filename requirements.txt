@@ -3,6 +3,7 @@ uuid
 flask
 uwsgi
 Flask-Login
+Flask-Assets
 pyOpenSSL
 oauthlib
 httplib2
@@ -10,12 +11,12 @@ google-api-python-client
 requests
 oauth2client
 reload
-Flask-Assets
 cssmin
 jsmin
 pytest
 redis
 psycopg2-binary
 sqlalchemy
+celery
 
 

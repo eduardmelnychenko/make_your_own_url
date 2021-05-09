@@ -17,6 +17,8 @@ services:
    command: redis-server --appendonly yes --requirepass rcmnd-pass --maxmemory-policy allkeys-lru --maxmemory 100M
    volumes:
     - redis_data:/data
+   ports:
+   - 6379:6379
  database:
    image: "postgres"
    hostname: make_your_own_url_db

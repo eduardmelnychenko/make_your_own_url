@@ -3,7 +3,7 @@ from os import environ, urandom
 from app.creds import settings
 
 
-class Config(settings.GoogleSecrets, settings.DbSecrets, settings.CacheSecrets, settings.CelerySecrets):
+class Config(settings.GoogleSecrets, settings.DbSecrets, settings.CacheSettings, settings.CelerySettings):
     DEBUG = False
     TESTING = False
     SECRET_KEY = environ.get("APP_SECRET_KEY", default=urandom(16))

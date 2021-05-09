@@ -1,3 +1,7 @@
 import redis
+from app.creds.settings import CacheSettings
 
-redis_client = redis.Redis(host='cache', port=6379, password='rcmnd-pass')
+redis_client = redis.Redis(host=CacheSettings.REDIS_HOST,
+                           port=CacheSettings.REDIS_PORT,
+                           password=CacheSettings.REDIS_PASS)
+
