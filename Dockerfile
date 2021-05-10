@@ -17,8 +17,8 @@ RUN pip install -r requirements.txt
 COPY ./ /app/
 
 RUN useradd --home-dir=/app --uid=1000 uwsgi_user
-#RUN mkdir /data
-#RUN chmod -R 777 /data
+RUN chmod +x run_celery_tasks.sh
+RUN chmod +x run_beat_schedule.sh
 
 USER uwsgi_user
 

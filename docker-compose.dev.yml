@@ -19,7 +19,6 @@ services:
    environment:
      - FLASK_ENV=development
    ports:
-#     - 0.0.0.0:80:80
      - target: 80
        published: 80
        protocol: tcp

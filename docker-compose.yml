@@ -29,7 +29,22 @@ services:
     - postgre_data:/var/lib/postgresql/data/
    ports:
     - 5432:5432 # you may wish to comment this line if you do not need external access to the db
-
+ celery_worker:
+   container_name: celery_worker
+   build: .
+   restart: always
+   command: /app/run_celery_tasks.sh
+   depends_on:
+     - database
+     - cache
+ beat_worker:
+   container_name: beat_worker
+   build: .
+   restart: always
+   command: /app/run_beat_schedule.sh
+   depends_on:
+     - database
+     - cache
 volumes:
   redis_data:
   postgre_data:
