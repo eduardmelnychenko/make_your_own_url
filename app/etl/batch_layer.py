@@ -8,6 +8,7 @@ from app.db.db_procs import SQLRequest
 from app_run import application
 
 from celery import Celery
+
 # from celery.schedules import crontab
 
 CELERY = Celery('celery_tasks',
@@ -21,17 +22,23 @@ redis_client = redis.Redis(host=CacheSettings.REDIS_HOST,
 
 @CELERY.on_after_configure.connect
 def batch_tasks(sender, **kwargs):
-    sender.add_periodic_task(10.0, run_batch.s(), name='celery_tasks.run_batch_click_log')
+    # writes logs to db
+    sender.add_periodic_task(CelerySettings.UPDATE_LOGS_TIMEOUT, batch_write_to_db.s(),
+                             name='celery_tasks.batch_write_to_db')
+
+    # updates mat.views
+    sender.add_periodic_task(CelerySettings.UPDATE_VIEWS_TIMEOUT, update_mat_views.s(),
+                             name='celery_tasks.update_mat_views')
 
 
-@CELERY.task(name="celery_tasks.run_batch_click_log")
-def run_batch(message="Start run_batch"):
+@CELERY.task(name="celery_tasks.batch_write_to_db")
+def batch_write_to_db(message="Start batch_write_to_db") -> None:
     data_rows = []
     click_log = redis_client.lpop(CacheSettings.CLICK_LOGS)
-    print(message)
+    logging.info(message)
     while click_log:
         decoded_click_log = ast.literal_eval(click_log.decode())
-        print(decoded_click_log)
+        logging.debug(decoded_click_log)
         data_rows.append(decoded_click_log)
         click_log = redis_client.lpop(CacheSettings.CLICK_LOGS)
 
@@ -45,3 +52,18 @@ def run_batch(message="Start run_batch"):
         logging.info(f"Success: {batch_res}, n_clicks: {len(data_rows)}")
     else:
         logging.info("No clicks were logged this time")
+
+
+@CELERY.task(name="celery_tasks.update_mat_views")
+def update_mat_views(message="Start update_mat_views") -> None:
+    logging.info(message)
+
+    mat_views = ["click_count_view", "click_daily_cnt", "all_url_info"]
+    with application.app_context():
+        for mat_view in mat_views:
+            res = SQLRequest().execute_query(f"REFRESH MATERIALIZED VIEW CONCURRENTLY {mat_view}")
+            if res is True:
+                logging.info(f"Successfully updated: {mat_view}")
+            else:
+                logging.info(f"Failed to update: {mat_view}")
+    logging.info("Finished mat.views refresh")
