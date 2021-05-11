@@ -56,14 +56,14 @@ class User(UserMixin):
 
     def get_most_clicked_urls(self) -> dict:
         headers = {'ID': 'text', 'Clicks': 'text', 'URL': 'url'}
-        q_string = f"SELECT suffix, cnt, long_url FROM click_count_view WHERE user_id='{self.id}'" \
+        q_string = f"SELECT suffix, cnt, long_url FROM user_url_cnt_view WHERE user_id='{self.id}'" \
                    f" ORDER BY cnt DESC LIMIT 10;"
 
         return basic_table_compose(headers, q_string)
 
     def get_user_url_table(self) -> dict:
-        headers = {'Short URL': 'text', 'Description': 'text', 'URL': 'url', 'Date added': 'text',
-                   'Clicks': 'text', 'Actions': 'text'}
+        headers = {' ': 'text', 'Short URL': 'text', 'Description': 'text', 'URL': 'url', 'Date added': 'text',
+                   'Clicks': 'text', }
         q_string = f"select suffix, description, long_url, date_added::TEXT, cnt " \
-                   f"from all_url_info where user_id='{self.id}' order by date_added asc;"
+                   f"from url_info_view where user_id='{self.id}' order by date_added asc;"
         return basic_table_compose(headers, q_string)

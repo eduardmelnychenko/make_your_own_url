@@ -58,7 +58,7 @@ def batch_write_to_db(message="Start batch_write_to_db") -> None:
 def update_mat_views(message="Start update_mat_views") -> None:
     logging.info(message)
 
-    mat_views = ["click_count_view", "click_daily_cnt", "all_url_info"]
+    mat_views = ["user_url_cnt_view", "user_daily_cnt_view", "url_info_view"]
     with application.app_context():
         for mat_view in mat_views:
             res = SQLRequest().execute_query(f"REFRESH MATERIALIZED VIEW CONCURRENTLY {mat_view}")
@@ -67,3 +67,15 @@ def update_mat_views(message="Start update_mat_views") -> None:
             else:
                 logging.info(f"Failed to update: {mat_view}")
     logging.info("Finished mat.views refresh")
+
+
+@CELERY.task(name="celery_tasks.delete_urls")
+def delete_urls(urls_ids, customer_id):
+
+    with application.app_context():
+        res0 = SQLRequest().execute_query(f"DELETE FROM URLS WHERE suffix IN ({urls_ids}) and user_id='{customer_id}'")
+        res1 = SQLRequest().execute_query(f"REFRESH MATERIALIZED VIEW CONCURRENTLY url_info_view")
+        if all([res0, res1]) is True:
+            logging.info(f"Successfully deleted: {urls_ids}")
+        else:
+            logging.info(f"Failed to delete: {urls_ids}")

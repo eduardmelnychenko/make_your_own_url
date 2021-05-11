@@ -58,7 +58,7 @@ CREATE TABLE click_log (
 );
 
 --view to get count of clicks for url level
-CREATE MATERIALIZED VIEW click_count_view AS
+CREATE MATERIALIZED VIEW user_url_cnt_view AS
   SELECT
     suffix,
     long_url,
@@ -75,7 +75,7 @@ CREATE MATERIALIZED VIEW click_count_view AS
 WITH DATA;
 
 CREATE UNIQUE INDEX user_id_suffix
-  ON click_count_view (user_id, suffix);
+  ON user_url_cnt_view (user_id, suffix);
 
 --view to get count of clicks for url-source level
 --CREATE MATERIALIZED VIEW click_source_count_view AS
@@ -100,8 +100,8 @@ CREATE UNIQUE INDEX user_id_suffix
 --CREATE UNIQUE INDEX user_id_suffix_source
 --  ON click_source_count_view (user_id, suffix, click_source);
 
--- view to get daily clicks for a user urls
-CREATE MATERIALIZED VIEW click_daily_cnt AS
+-- view to get daily clicks for a user's all urls
+CREATE MATERIALIZED VIEW user_daily_cnt_view AS
   SELECT
     click_log.date_added AS date,
     user_id,
@@ -112,10 +112,10 @@ CREATE MATERIALIZED VIEW click_daily_cnt AS
 WITH DATA;
 
 CREATE UNIQUE INDEX user_id_date
-  ON click_daily_cnt (user_id, date);
+  ON user_daily_cnt_view (user_id, date);
 
 -- info on urls
-CREATE MATERIALIZED VIEW all_url_info AS
+CREATE MATERIALIZED VIEW url_info_view AS
   SELECT
     suffix,
     short_url,
@@ -134,7 +134,7 @@ CREATE MATERIALIZED VIEW all_url_info AS
 WITH DATA;
 
 CREATE UNIQUE INDEX user_url
-  ON all_url_info (user_id, short_url);
+  ON url_info_view (user_id, short_url);
 
 INSERT INTO urls (suffix, short_url ,long_url) VALUES ('shaga', 'https://rcmnd.me/1','http://test.com');
 INSERT INTO urls (suffix, short_url ,long_url) VALUES ('shaga2', 'https://rcmnd.me/12','http://test.com');

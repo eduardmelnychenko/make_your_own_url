@@ -1,8 +1,11 @@
+import logging
+
 from flask import Blueprint, render_template, request, redirect, url_for
 
 import app.engine.url_model
 from app.db.db_procs import log_click
 from app.etl.tracker import get_user_info
+from app.creds.settings import OwnUrls
 
 page = Blueprint('page', __name__, template_folder='templates')
 
@@ -62,13 +65,9 @@ def privacy():
     return render_template('privacy.html')
 
 
-@page.route('/not_found', methods=['GET'])
-def not_found():
-    return render_template('404.html', code=404)
-
-
 @page.route('/<string:suffix>', methods=['GET'])
 def url_redirect(suffix):
+
     long_url = app.engine.url_model.Url().match_long_url(suffix)
 
     print(long_url)
@@ -81,3 +80,9 @@ def url_redirect(suffix):
         return redirect(long_url, code=302)
 
     return render_template('index.html', short_url=None, long_url=None, new_url=True, show_error=True)
+
+
+@page.route('/not_found', methods=['GET'])
+def not_found():
+    return render_template('404.html', code=404)
+

@@ -4,7 +4,7 @@ from app.engine.user_model import User
 import uuid
 from random import randint
 from urllib.parse import urlparse
-from app.creds.settings import BlockedUrls
+from app.creds.settings import BlockedUrls, OwnUrls
 
 from flask import request
 
@@ -26,6 +26,10 @@ class Url:
         self.long_url, self.short_url, self.description, self.date_added, self.date_expire = self.get_url_data()
 
     def if_suffix_exists(self) -> bool:
+
+        if self.suffix in OwnUrls.COMMON_SUFFIXES.union(OwnUrls.USER_SUFFIXES):
+            return True
+
         res = False
         if self.suffix:
             long_url = redis_client.get(self.suffix)

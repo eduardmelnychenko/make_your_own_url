@@ -1,3 +1,5 @@
+import logging
+from celery import Celery
 import requests
 import json
 from flask import Blueprint, render_template, request, redirect, current_app, url_for, flash
@@ -6,6 +8,11 @@ import app.engine.url_model
 from app.engine.user_model import User
 from app.engine.validators import *
 from app_run import application
+from app.creds.settings import CelerySettings
+
+CELERY = Celery('celery_tasks',
+                backend=CelerySettings.CELERY_BACKEND_URL,
+                broker=CelerySettings.CELERY_BROKER_URL)
 
 from flask_login import (
     current_user,
@@ -49,14 +56,15 @@ def home():
 
     if request.method == 'POST':
         for key in request.form:
-            print(key, request.form[key])
+            logging.debug("Form keys:")
+            logging.debug(key, request.form[key])
 
         long_url = request.form.get('longUrlInput')
         description = request.form.get('urlDescription', '')
         custom_suffix = request.form.get('customSuffix')
         days_to_live = request.form.get('urlDaysLive', None)
 
-        print(long_url, description, custom_suffix, days_to_live)
+        logging.debug(long_url, description, custom_suffix, days_to_live)
 
         """
         Default behaviour is to assume that long url to be incorrect and show warning. Only if it passes validation, 
@@ -69,11 +77,11 @@ def home():
         custom_suffix = validate_suffix(custom_suffix)
 
         nu = app.engine.url_model.Url(current_user=cu, suffix=custom_suffix)
-        nu.print_info()
+        logging.debug(nu.print_info())
 
         outcome_success = nu.create_url(long_url=long_url, description=description,
                                         days_to_live=days_to_live)
-        nu.print_info()
+        logging.debug(nu.print_info())
 
         short_url = nu.short_url
 
@@ -92,7 +100,21 @@ def urls():
     show_warning = False
     show_error = False
     cu = User(current_user.id)
+
+    if request.method == 'POST':
+        selected_sfxs = tuple(key for key in request.form)
+        logging.debug(msg=f"{str(selected_sfxs)}, {str(len(selected_sfxs))}")
+        if len(selected_sfxs) > 0:
+            # send task to Celery
+            args_to_send = (",".join("'" + x + "'" for x in selected_sfxs), current_user.id)
+            logging.debug(args_to_send)
+            del_task = CELERY.send_task('celery_tasks.delete_urls', args=args_to_send)
+            while del_task.state == 'PENDING':
+                logging.debug(del_task.state)
+            logging.debug(del_task.state)
+
     all_url_table = cu.get_user_url_table()
+
     return render_template('urls.html', all_url_table=all_url_table, show_warning=show_warning, show_error=show_error)
 
 
